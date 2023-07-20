@@ -1,0 +1,28 @@
+//@version=5
+strategy("My inside candle updated strategy", overlay=true)
+
+float slpercent = 1.0 
+float targetPercent = 2.0
+
+stopLoss = strategy.position_avg_price * (1 - slpercent / 100)
+target = strategy.position_avg_price * (1 + targetPercent / 100)
+
+ema25 = ta.ema(close, 25)
+sma45 = ta.sma(close, 45)
+
+isUptrend = ema25 > sma45
+isDowntrend = ema25 < sma45
+
+isInsideCandle = high[1] > high and low[1] < low
+
+if isInsideCandle and isUptrend
+    strategy.entry("Buy", strategy.long)
+
+if isInsideCandle and isDowntrend
+    strategy.entry("Sell", strategy.short)
+
+strategy.exit("StopLossLong", "Buy", loss=stopLoss)
+strategy.exit("TargetLong", "Buy", limit=target)
+
+strategy.exit("StopLossShort", "Sell", loss=stopLoss)
+strategy.exit("TargetShort", "Sell", limit=target)

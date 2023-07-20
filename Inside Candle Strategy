@@ -1,0 +1,26 @@
+//@version=5
+strategy("Inside Candle Strategy", overlay=true)
+
+
+float stopLossPercent = input(1.0)
+float targetPercent = input(2.0) 
+
+stopLoss = strategy.position_avg_price * (1 - stopLossPercent / 100)
+target = strategy.position_avg_price * (1 + targetPercent / 100)
+
+bullish = close > open
+bearish = close < open
+
+isInsideCandle = high[1] > high and low[1] < low
+
+if isInsideCandle and bullish
+    strategy.entry("Buy", strategy.long)
+
+if isInsideCandle and bearish
+    strategy.entry("Sell", strategy.short)
+
+strategy.exit("StopLossLong", "Buy", loss=stopLoss)
+strategy.exit("TargetLong", "Buy", limit=target)
+
+strategy.exit("StopLossShort", "Sell", loss=stopLoss)
+strategy.exit("TargetShort", "Sell", limit=target)
