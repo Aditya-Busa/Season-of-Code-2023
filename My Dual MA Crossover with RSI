@@ -1,0 +1,24 @@
+//@version=5
+strategy("Dual MA Crossover with RSI", overlay=true)
+
+fastLength = input(10, title="Fast Moving Average Length")
+slowLength = input(20, title="Slow Moving Average Length")
+rsiLength = input(14, title="RSI Length")
+
+fastMA = ta.sma(close, fastLength)
+slowMA = ta.sma(close, slowLength)
+
+rsiValue = ta.rsi(close, rsiLength)
+
+goLong = ta.crossover(fastMA, slowMA) and rsiValue > 50
+goShort = ta.crossunder(fastMA, slowMA) and rsiValue < 50
+
+stopLossLong = input(2.0, title="Long Stop-Loss (%)") / 100
+stopLossShort = input(2.0, title="Short Stop-Loss (%)") / 100
+
+if (goLong)
+    strategy.entry("Long", strategy.long)
+if (goShort)
+    strategy.entry("Short", strategy.short)
+strategy.exit("ExitLong", "Long", stop=close * (1 - stopLossLong))
+strategy.exit("ExitShort", "Short", stop=close * (1 + stopLossShort))
