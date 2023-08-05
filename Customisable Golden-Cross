@@ -1,5 +1,5 @@
 //@version=5
-strategy("Customisable Death-Cross")
+strategy("Customisable Golden-Cross")
 x=input(50,"fast")
 y=input(100,"slow")
 if ta.ema(close,x)>ta.ema(close,y)
