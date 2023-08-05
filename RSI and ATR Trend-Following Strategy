@@ -1,0 +1,31 @@
+//@version=5
+strategy("RSI and ATR Trend-Following Strategy", overlay=true)
+
+rsiLength = input(14, title="RSI Length")
+atrLength = input(14, title="ATR Length")
+
+rsiValue = ta.rsi(close, rsiLength)
+
+atrValue = ta.atr(atrLength)
+
+overboughtLevel = input(70, title="Overbought Level")
+oversoldLevel = input(30, title="Oversold Level")
+
+uptrend = rsiValue > overboughtLevel and rsiValue > ta.rsi(close[1], rsiLength)
+downtrend = rsiValue < oversoldLevel and rsiValue < ta.rsi(close[1], rsiLength)
+
+goLong = uptrend and ta.change(close) > atrValue
+goShort = downtrend and ta.change(close) > atrValue
+
+exitLong = downtrend
+exitShort = uptrend
+
+stopLossLong = input(5.0, title="Long Stop-Loss (%)") / 100
+stopLossShort = input(5.0, title="Short Stop-Loss (%)") / 100
+
+if goLong
+    strategy.entry("Long", strategy.long)
+if goShort
+    strategy.entry("Short", strategy.short)
+strategy.exit("ExitLong", "Long", stop=close * (1 - stopLossLong))
+strategy.exit("ExitShort", "Short", stop=close * (1 + stopLossShort))
